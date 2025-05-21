@@ -4,11 +4,22 @@ credentials <- data.frame(
   stringsAsFactors = FALSE
 )
 
-usersDb<-"~/ShinyProjects/ProtectedApp/DataBases/Users.sqlite"
-appData<-"~/ShinyProjects/ProtectedApp/DataBases/AccSpecimens.sqlite"
-methodsData<-"~/ShinyProjects/ProtectedApp/Methods"
-ModulesData<-"~/ShinyProjects/ProtectedApp/Modules"
-CustomElements<-"~/ShinyProjects/ProtectedApp/DesignElements"
+if(Sys.info()["sysname"] == "Windows"){
+  usersDb<-"~/ShinyProjects/ProtectedApp/DataBases/Users.sqlite"
+  appData<-"~/ShinyProjects/ProtectedApp/DataBases/AccSpecimens.sqlite"
+  methodsData<-"~/ShinyProjects/ProtectedApp/Methods"
+  ModulesData<-"~/ShinyProjects/ProtectedApp/Modules"
+  CustomElements<-"~/ShinyProjects/ProtectedApp/DesignElements"
+}
+
+if(Sys.info()["sysname"] == "Windows"){
+  usersDb<-"E:/LabApps/ProtectedApp/DataBases/Users.sqlite"
+  appData<-"E:/LabApps/ProtectedApp/DataBases/AccSpecimens.sqlite"
+  methodsData<-"E:/LabApps/ProtectedApp/Methods"
+  ModulesData<-"E:/LabApps/ProtectedApp/Modules"
+  CustomElements<-"E:/LabApps/ProtectedApp/DesignElements"
+}
+
 
 if(!file.exists(usersDb)){
   mydb <- dbConnect(RSQLite::SQLite(), usersDb)

@@ -30,8 +30,13 @@ DishesTable<-data.frame(Name = c("Кровяной агар",
                                  "Хромогенный агар",
                                  "Престон агар"
                                  ))
+if(Sys.info()["sysname"] == "Linux"){
+  DishPerTypeTable<-read.csv("~/ShinyProjects/ProtectedApp/DataBases/TypesAndDishes.csv", dec=",")
+}else{
+  DishPerTypeTable<-read.csv("E:/LabApps/ProtectedApp/DataBases/TypesAndDishes.csv", dec=",")
+}
 
-DishPerTypeTable<-read.csv("~/ShinyProjects/ProtectedApp/DataBases/TypesAndDishes.csv", dec=",")
+
 
 BactAcceptedTable<-data.frame(AxaptaCode = character(),
                               SampleCode = character(),
