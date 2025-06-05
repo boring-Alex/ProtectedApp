@@ -4,7 +4,7 @@ credentials <- data.frame(
   stringsAsFactors = FALSE
 )
 
-if(Sys.info()["sysname"] == "Windows"){
+if(Sys.info()["sysname"] == "Linux"){
   usersDb<-"~/ShinyProjects/ProtectedApp/DataBases/Users.sqlite"
   appData<-"~/ShinyProjects/ProtectedApp/DataBases/AccSpecimens.sqlite"
   methodsData<-"~/ShinyProjects/ProtectedApp/Methods"

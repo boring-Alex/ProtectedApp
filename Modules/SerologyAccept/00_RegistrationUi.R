@@ -1,10 +1,10 @@
-AcceptBactUI<-function(theme, id = "AcceptBact"){
+RegistrationUi<-function(theme, id = "Registration"){
   ns<-NS(id)
   tagList(
     sidebarLayout(
       sidebarPanel(
         selectInput(ns("SpecimenType"),
-                    "Тип образца",
+                    "Исследования ИФА",
                     choices = SpecTypesTable$Name),
         numericInput(ns("SpecNum"),
                      "Следующий номер",
@@ -20,7 +20,7 @@ AcceptBactUI<-function(theme, id = "AcceptBact"){
                   placeholder = "000000000000"),
         span(textOutput(ns("SpCodeAlert"),inline = TRUE), style="color:red"),
         PrimaryButton(ns("AddSampleButton"),
-                     "Добавить образец")
+                      "Добавить образец")
       ),
       mainPanel(
         fluidRow(
@@ -32,9 +32,9 @@ AcceptBactUI<-function(theme, id = "AcceptBact"){
                               explanation = "Удалить не закрытые записи"),
                  div(style = "height:2.5px"),
                  SuccessButton(ns("SaveToDbButton"),
-                               "На посев",
+                               "Принять",
                                icon("save"),
-                               explanation = "Утвердить и отправить на посев"))
+                               explanation = "Утвердить"))
         )
       )
     )

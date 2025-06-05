@@ -2,10 +2,10 @@ ruDT <- list(
   sProcessing = "Подождите...", sSearch = "Искать:", 
   sLengthMenu = "Показать _MENU_ элементов", 
   sInfo = "Показаны записи с _START_ по _END_ из _TOTAL_ элементов", 
-  sInfoEmpty = "", 
-  sInfoFiltered = "Всего найдено _MAX_ записей", 
+  sInfoEmpty = "Нет данных...", 
+  sInfoFiltered = "из _MAX_ записей", 
   sInfoPostFix = "", sLoadingRecords = "Подождите...", 
-  sZeroRecords = "", 
+  sZeroRecords = "Такой записи нет...", 
   sEmptyTable = "Ничего не найдено...", 
   oPaginate = list(
     sFirst = "Первый", sPrevious = "Назад", 

@@ -9,12 +9,16 @@ CreateInitialTables<-function(dbPath){
   dbDisconnect(connection)
 }
 
-UpdateSpecimenMaxNum<-function(groupName, spTypesTab, dbPath){
+UpdateSpecimenMaxNum<-function(groupNames, spTypesTab, dbPath){
   connection<-dbConnect(RSQLite::SQLite(), dbPath)
-  val <- spTypesTab[spTypesTab$Name == groupName,]
-  query <- "UPDATE SpecTypes SET MaxNum = :num WHERE Name = :nam"
-  pars<-list(num = val[1,]$MaxNum, nam = val[1,]$Name)
-  dbExecute(connection, query, pars)
+  dbBegin(connection)
+  for(groupName in groupNames){
+    val <- spTypesTab[spTypesTab$Name == groupName,]
+    query <- "UPDATE SpecTypes SET MaxNum = :num WHERE Name = :nam"
+    pars<-list(num = val[1,]$MaxNum, nam = val[1,]$Name)
+    dbExecute(connection, query, pars)
+  }
+  dbCommit(connection)
   dbDisconnect(connection)
 }
 

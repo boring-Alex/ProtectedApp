@@ -34,6 +34,22 @@ LoadBacterilogyByStatus<-function(dbPath, status, dateToSearch = Sys.Date()){
   return(tmp)
 }
 
+LoadUsedAxNums<-function(dbPath, tableName){
+  connection<-dbConnect(RSQLite::SQLite(), dbPath)
+  query = paste0("SELECT DISTINCT AxaptaCode FROM ", tableName, ";")
+  tmp <- dbGetQuery(connection, query)
+  dbDisconnect(connection)
+  return(tmp)
+}
+
+LoadUsedBarcodes<-function(dbPath, tableName){
+  connection<-dbConnect(RSQLite::SQLite(), dbPath)
+  query = paste0("SELECT DISTINCT SampleCode FROM ", tableName, ";")
+  tmp <- dbGetQuery(connection, query)
+  dbDisconnect(connection)
+  return(tmp)
+}
+
 LoadSerology<-function(dbPath){
   connection<-dbConnect(RSQLite::SQLite(), dbPath)
   query = "SELECT * FROM SerolAccepted WHERE AccDate = :d;"

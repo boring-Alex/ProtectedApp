@@ -15,9 +15,11 @@ library(bslib)
 library(DT)
 library(stringi)
 library(shinyalert)
+library(bsicons)
+library(rclipboard)
 source("headers.R")
 mainTheme<-bslib::bs_theme(
-  bootswatch = "minty"
+  bootswatch = "flatly"
 )
 
 # Define UI for application that draws a histogram
@@ -31,13 +33,14 @@ ui <- shinyUI(
                AcceptBactUI(mainTheme)),
       tabPanel("Бактериология: посевы",
                InoculateBactUI(mainTheme)),
-      tabPanel("Серологические исследования"),
+      tabPanel("Серологические исследования",
+               SerolAcceptUi(mainTheme)),
       tabPanel("Настройки")
     )
   )
 )
 
-#ui<-secure_app(ui)
+ui<-secure_app(theme = mainTheme, ui)
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
@@ -45,6 +48,7 @@ server <- function(input, output) {
     check_credentials = check_credentials(credentials)
   )
   AcceptBactServer(mainTheme)
+  InoculateBactServer(mainTheme)
 }
 
 # Run the application 

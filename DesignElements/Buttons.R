@@ -1,42 +1,45 @@
-getButton<-function(bttnId, bttnName, bttnClass){
+getButton<-function(bttnId, bttnName, bttnClass, bttnIcon = NULL, tTip = NULL){
   ui<-actionButton(inputId = bttnId,
                  label = bttnName,
-                 class = bttnClass)
+                 class = bttnClass,
+                 icon = bttnIcon,
+                 style = "width: 100%",
+                 tooltip = tTip)
   return(ui)
 }
 
-PrimaryButton<-function(buttonId, buttonName){
-  return(getButton(buttonId, buttonName, "btn btn-primary"))
+PrimaryButton<-function(buttonId, buttonName, ic = NULL, explanation = NULL){
+  return(getButton(buttonId, buttonName, "btn btn-primary", ic, explanation))
 }
 
-SecondaryButton<-function(buttonId, buttonName){
-  return(getButton(buttonId, buttonName, "btn btn-secondary"))
+SecondaryButton<-function(buttonId, buttonName, ic = NULL, explanation = NULL){
+  return(getButton(buttonId, buttonName, "btn btn-secondary", ic, explanation))
 }
 
-SuccessButton<-function(buttonId, buttonName){
-  return(getButton(buttonId, buttonName, "btn btn-success"))
+SuccessButton<-function(buttonId, buttonName, ic = NULL, explanation = NULL){
+  return(getButton(buttonId, buttonName, "btn btn-success", ic, explanation))
 }
 
-InfoButton<-function(buttonId, buttonName){
-  return(getButton(buttonId, buttonName, "btn btn-info"))
+InfoButton<-function(buttonId, buttonName, ic = NULL, explanation = NULL){
+  return(getButton(buttonId, buttonName, "btn btn-info", ic, explanation))
 }
 
-WarningButton<-function(buttonId, buttonName){
-  return(getButton(buttonId, buttonName, "btn btn-warning"))
+WarningButton<-function(buttonId, buttonName, ic = NULL, explanation = NULL){
+  return(getButton(buttonId, buttonName, "btn btn-warning", ic, explanation))
 }
 
-DangerButton<-function(buttonId, buttonName){
-  return(getButton(buttonId, buttonName, "btn btn-danger"))
+DangerButton<-function(buttonId, buttonName, ic = NULL, explanation = NULL){
+  return(getButton(buttonId, buttonName, "btn btn-danger", ic, explanation))
 }
 
-DarkButton<-function(buttonId, buttonName){
-  return(getButton(buttonId, buttonName, "btn btn-dark"))
+DarkButton<-function(buttonId, buttonName, ic = NULL, explanation = NULL){
+  return(getButton(buttonId, buttonName, "btn btn-dark", ic, explanation))
 }
 
-LightButton<-function(buttonId, buttonName){
-  return(getButton(buttonId, buttonName, "btn btn-light"))
+LightButton<-function(buttonId, buttonName, ic = NULL, explanation = NULL){
+  return(getButton(buttonId, buttonName, "btn btn-light", ic, explanation))
 }
 
-LinkButton<-function(buttonId, buttonName){
-  return(getButton(buttonId, buttonName, "btn btn-link"))
+LinkButton<-function(buttonId, buttonName, ic = NULL, explanation = NULL){
+  return(getButton(buttonId, buttonName, "btn btn-link", ic, explanation))
 }
