@@ -26,7 +26,8 @@ InoculateBactUI<-function(theme, id = "InoculateBact"){
                    div(style = "height:2.5px"),
                    SuccessButton(ns("CompleteTask"),
                                  "",
-                                 icon("thumbs-up")))
+                                 icon("thumbs-up"),
+                                 "Посеяно и записано"))
           )
         )
       )

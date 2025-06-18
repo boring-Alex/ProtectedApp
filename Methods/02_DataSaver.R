@@ -5,7 +5,8 @@ CreateInitialTables<-function(dbPath){
   if(!("Dishes" %in% tables)){ dbWriteTable(connection, "Dishes", DishesTable) }
   if(!("DishPerType" %in% tables)){ dbWriteTable(connection, "DishPerType", DishPerTypeTable) }
   if(!("BactAccepted" %in% tables)){ dbWriteTable(connection, "BactAccepted", BactAcceptedTable) }
-  if(!S("SerolAccepted" %in% tables)){ dbWriteTable(connection, "SerolAccepted", SerolAcceptedTable) }
+  if(!("SerolAccepted" %in% tables)){ dbWriteTable(connection, "SerolAccepted", SerolAcceptedTable) }
+  if(!("SerolNumbers" %in% tables)){ dbWriteTable(connection, "SerolNumbers", SerolNumbers) }
   dbDisconnect(connection)
 }
 
@@ -16,6 +17,19 @@ UpdateSpecimenMaxNum<-function(groupNames, spTypesTab, dbPath){
     val <- spTypesTab[spTypesTab$Name == groupName,]
     query <- "UPDATE SpecTypes SET MaxNum = :num WHERE Name = :nam"
     pars<-list(num = val[1,]$MaxNum, nam = val[1,]$Name)
+    dbExecute(connection, query, pars)
+  }
+  dbCommit(connection)
+  dbDisconnect(connection)
+}
+
+UpdateSerolTypeMaxNum<-function(groupNames, spTypesTab, dbPath){
+  connection<-dbConnect(RSQLite::SQLite(), dbPath)
+  dbBegin(connection)
+  for(groupName in groupNames){
+    val <- spTypesTab[spTypesTab$SpecimenType == groupName,]
+    query <- "UPDATE SerolNumbers SET NextNumber = :num WHERE SpecimenType = :nam"
+    pars<-list(num = val[1,]$NextNumber, nam = val[1,]$SpecimenType)
     dbExecute(connection, query, pars)
   }
   dbCommit(connection)
@@ -91,4 +105,63 @@ VALUES (
   finally = {
     dbDisconnect(connection)
   })
+}
+
+CloseSpecimen<-function(AxSpecimenNum, dataTable, dbPath){
+  connection<-dbConnect(RSQLite::SQLite(), dbPath)
+  query <- paste0("UPDATE ",dataTable, " Set IsCompleted = TRUE WHERE AxaptaCode = :num;")
+  pars<-list(num = AxSpecimenNum)
+  dbExecute(connection, query, pars)
+  dbDisconnect(connection)
+}
+
+AddSerolAcceptedRecord<-function(acceptedTable, dbPath){
+  connection<-dbConnect(RSQLite::SQLite(), dbPath)
+  query <- "INSERT INTO SerolAccepted (
+    AxaptaCode,
+    SampleCode,
+    AccDate,
+    Type,
+    CurrentNum,
+    IsCompleted,
+    TaskName,
+    HasVial
+)
+VALUES (
+    :ax,
+    :samCode,
+    :accDate,
+    :type,
+    :curNum,
+    :isCompleted,
+    :task,
+    :vial
+);"
+dbBegin(connection)
+tryCatch({
+  for(rowNum in 1:nrow(acceptedTable)){
+    pars<-list(ax = acceptedTable[rowNum,]$AxaptaCode,
+               samCode = acceptedTable[rowNum,]$SampleCode,
+               accDate = as.numeric(acceptedTable[rowNum,]$AccDate),
+               type = acceptedTable[rowNum,]$Type,
+               curNum = as.numeric(acceptedTable[rowNum,]$CurrentNum),
+               isCompleted = as.logical(acceptedTable[rowNum,]$IsCompleted),
+               task = acceptedTable[rowNum,]$TaskName,
+               vial = as.logical(acceptedTable[rowNum,]$HasVial))
+    dbExecute(connection, query, pars)
+  }
+  dbCommit(connection)
+  SuccessAlert("Успешно", "сохранено в БД")
+},
+warning = function(w){
+  dbRollback(connection)
+  WarningAlert("Предупреждение", conditionMessage(w))
+},
+error = function(e){
+  dbRollback(connection)
+  WarningAlert("Ошибка", conditionMessage(e))
+},
+finally = {
+  dbDisconnect(connection)
+})
 }

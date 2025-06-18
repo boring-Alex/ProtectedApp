@@ -6,40 +6,38 @@ AcceptBactServer<-function(myTheme, id = "AcceptBact"){
       acceptedData<-reactiveVal(LoadBacterilogyByStatus(appData,status = FALSE))
       typesAndNums<-reactiveVal(SpecTypesTable)
       changedCodeGroups<-reactiveVal(NULL)
+      errorMessage<-reactiveVal(as.character())
       axCodes<-reactiveVal(LoadBacterilogyByStatus(appData,status = FALSE)[,1])
       wrongNum<-function(){
+        errorMsg <- ""
         if(input$SpecNum <= 0){
-          output$SpNumAlert <- renderText({"Номер не может равняться нулю или быть отрицательным"})
-          return(TRUE)
+          errorMsg <- "Номер не может равняться нулю или быть отрицательным"
+          errorMessage(c(errorMessage(),errorMsg))
         }
-        output$SpNumAlert <- renderText(NULL)
-        return(FALSE)
       }
       wrongAx<-function(){
+        errorMsg<-""
         if(!stri_detect(input$AxaptaCode, regex = "^M\\d{7}")){
-          output$AxAlert <- renderText({"Неверный формат номера Аксапта"})
-          return(TRUE)
+          errorMsg <- "Неверный формат номера Аксапта"
+          errorMessage(c(errorMessage(),errorMsg))
         }
-        usedNums<-LoadUsedAxNums(appData, "BactAccepted")
-        if(input$AxaptaCode %in% usedNums[1,]){
-          output$AxAlert <- renderText({"Номер Аксапта уже использовался"})
-          return(TRUE)
+        usedNums<-rbind(LoadUsedAxNums(appData, "BactAccepted"),acceptedData()[,1])
+        if(input$AxaptaCode %in% usedNums[,1]){
+          errorMsg <- "Номер Аксапта уже использовался"
+          errorMessage(c(errorMessage(),errorMsg))
         }
-        output$AxAlert <- renderText({NULL})
-        return(FALSE)
       }
       wrongSpCode<-function(){
+        errorMsg <- ""
         if(!stri_detect(input$SpecimenCode, regex = "^\\d{12}$")){
-          output$SpCodeAlert <- renderText({"Неверный формат номера направления"})
-          return(TRUE)
+          errorMsg <- "Неверный формат номера направления"
+          errorMessage(c(errorMessage(),errorMsg))
         }
-        usedNums<-LoadUsedBarcodes(appData, "BactAccepted")
-        if(input$SpecimenCode %in% usedNums[1,]){
-          output$AxAlert <- renderText({"Код направления уже использовался"})
-          return(TRUE)
+        usedNums<-rbind(LoadUsedBarcodes(appData, "BactAccepted"),acceptedData()[,2])
+        if(input$SpecimenCode %in% usedNums[,1]){
+          errorMsg <- "Код направления уже использовался"
+          errorMessage(c(errorMessage(),errorMsg))
         }
-        output$SpCodeAlert <- renderText(NULL)
-        return(FALSE)
       }
       updateChangedGroups<-function(){
         newValue<-input$SpecimenType
@@ -53,7 +51,7 @@ AcceptBactServer<-function(myTheme, id = "AcceptBact"){
       updateSpecimenNumbers<-function(nextCode){
         typesAndNums({
           tmp<-typesAndNums()
-          tmp[SpecTypesTable$Name == input$SpecimenType,2]<-nextCode
+          tmp[tmp$Name == input$SpecimenType,2]<-nextCode
           tmp
         })
         updateNumericInput(session, "SpecNum", value = nextCode)
@@ -68,9 +66,16 @@ AcceptBactServer<-function(myTheme, id = "AcceptBact"){
         changedCodeGroups(NULL)
       }
       observeEvent(input$AddSampleButton, {
-        if(wrongNum()){ return() }
-        if(wrongAx()){ return() }
-        if(wrongSpCode()){ return() }
+        wrongNum()
+        wrongAx()
+        wrongSpCode()
+        if(length(errorMessage()) > 0){
+          for(err in errorMessage()){
+            showNotification(err, duration = 5, type = "error")
+          }
+          errorMessage(as.character())
+          return()
+        }
         acceptedData({
           newRow<-c(input$AxaptaCode,
                   input$SpecimenCode,

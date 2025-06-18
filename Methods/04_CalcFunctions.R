@@ -1,3 +1,4 @@
+#Подсчёт количества чашек для посева
 CountDishes <- function(){
   analyses <- LoadBacterilogyByStatus(appData, FALSE)
   outputTab<-data.frame(Dish = character(), Amount = numeric())
@@ -31,7 +32,7 @@ CalcTubePosition <- function(rowNum, colNum, tubeNum){
 CreateEmptyPlate<-function(rowsN, colsN){
   outDf<-as.data.frame(matrix("", nrow = rowsN, ncol = colsN))
   rownames(outDf) <- 1:rowsN
-  colnames(outdf) <- 1:colsN
+  colnames(outDf) <- 1:colsN
   return(outDf)
 }
 
@@ -41,23 +42,23 @@ PutInPlate <- function(dataFrame, posNumber, inputType = c("empty", "blank", "ne
       return("")
     }
     if(objType == "blank"){
-      return(as.character(icon("square")))
+      return(as.character(icon("file-contract", style = "font-size: 30px; color: rgb(18, 49, 204);")))
     }
     if(objType == "newTube"){
-      return(as.character(icon("circle-check")))
+      return(as.character(icon("vial", style = "font-size: 30px; color: rgb(145, 28, 45);")))
     }
     if(objType == "oldTube"){
-      return(as.character(icon("circle")))
+      return(as.character(icon("vial-circle-check", style = "font-size: 30px; color: rgb(120, 235, 122);")))
     }
     return("")
   }
   df <- dataFrame
   cellsInRow <- ncol(df)
   columnPosition <- posNumber %% cellsInRow
-  rowPosition <- as.integer(posNumber / cellsInRow) + 1
+  rowPosition <- nrow(df) - as.integer(posNumber / cellsInRow)
   if(columnPosition == 0){
     columnPosition = ncol(df)
-    rowPosition = nrow(df)
+    rowPosition <- rowPosition + 1
   }
   df[rowPosition, columnPosition] <- getIcon(inputType)
   return(df)
@@ -70,4 +71,25 @@ GetTubeQueryNum<-function(firstNum, tubeNum){
   return(tubeNum + 1 - firstNum)
 }
 
+GetTubePlateNum<-function(firstNum, tubeNum, rowsN, colsN){
+  if(firstNum > tubeNum){
+    stop("Первый номер не может быть больше текущего")
+  }
+  return(as.integer((tubeNum + 1 - firstNum) / (rowsN*colsN)) + 1)
+}
+
 #EndRegion 
+
+#Region разбор пробирок по планшетам
+GetPlateNums <- function(mainData, specType, rowNum, colNum, necessaryPlate){
+  numInPlate <- rowNum * colNum
+  tmp <- mainData %>% filter(Type == specType)
+  tmp$Plate <- lapply(tmp$CurrentNum, function(x,y){
+    minNum<-min(x)
+    as.integer((x+1-minNum) / y) + 1
+  },y = numInPlate)
+  tmp <- tmp %>% filter(Plate == necessaryPlate)
+  output<-data.frame(Num = tmp$CurrentNum, Tube = tmp$HasVial)
+  return(output)
+}
+#EndRegion разбор пробирок по планшетам

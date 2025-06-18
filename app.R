@@ -34,13 +34,12 @@ ui <- shinyUI(
       tabPanel("Бактериология: посевы",
                InoculateBactUI(mainTheme)),
       tabPanel("Серологические исследования",
-               SerolAcceptUi(mainTheme)),
-      tabPanel("Настройки")
+               SerolAcceptUi(mainTheme))
     )
   )
 )
 
-ui<-secure_app(theme = mainTheme, ui)
+#ui<-secure_app(theme = mainTheme, ui)
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
@@ -49,6 +48,7 @@ server <- function(input, output) {
   )
   AcceptBactServer(mainTheme)
   InoculateBactServer(mainTheme)
+  SerolAcceptServer(mainTheme)
 }
 
 # Run the application 

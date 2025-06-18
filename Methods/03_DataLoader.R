@@ -34,6 +34,16 @@ LoadBacterilogyByStatus<-function(dbPath, status, dateToSearch = Sys.Date()){
   return(tmp)
 }
 
+LoadSerologyByStatus<-function(dbPath, status, dateToSearch = Sys.Date()){
+  connection<-dbConnect(RSQLite::SQLite(), dbPath)
+  query = "SELECT AxaptaCode FROM SerolAccepted WHERE AccDate >= :d AND IsCompleted = :s;"
+  pars = list(d = as.numeric(as.POSIXct(dateToSearch)),
+              s = as.logical(status))
+  tmp <- dbGetQuery(connection, query, pars)
+  dbDisconnect(connection)
+  return(tmp)
+}
+
 LoadUsedAxNums<-function(dbPath, tableName){
   connection<-dbConnect(RSQLite::SQLite(), dbPath)
   query = paste0("SELECT DISTINCT AxaptaCode FROM ", tableName, ";")
@@ -50,10 +60,32 @@ LoadUsedBarcodes<-function(dbPath, tableName){
   return(tmp)
 }
 
-LoadSerology<-function(dbPath){
+LoadTask<-function(dbPath, currTask, tableName = "SerolAccepted"){
   connection<-dbConnect(RSQLite::SQLite(), dbPath)
-  query = "SELECT * FROM SerolAccepted WHERE AccDate = :d;"
-  pars = list(d = Sys.Date()-1)
+  query = paste0("SELECT * FROM ", tableName, " WHERE TaskName >= :t;")
+  pars<-list(t = currTask)
+  tmp <- dbGetQuery(connection, query, pars)
+  dbDisconnect(connection)
+  return(tmp)
+}
+
+LoadSerology<-function(dbPath, dateToSearch = Sys.Date(), taskName = NULL){
+  connection<-dbConnect(RSQLite::SQLite(), dbPath)
+  query = "SELECT * FROM SerolAccepted WHERE AccDate >= :d;"
+  pars = list(d = as.numeric(as.POSIXct(dateToSearch)))
+  if(!is.null(taskName)){
+    query = "SELECT * FROM SerolAccepted WHERE AccDate >= :d AND TaskName = :n;"
+    pars = list(d = as.numeric(as.POSIXct(dateToSearch), n = taskName))
+  }
+  tmp <- dbGetQuery(connection, query, pars)
+  dbDisconnect(connection)
+  return(tmp)
+}
+
+LoadTasksNums<-function(dbPath, dateToSearch = Sys.Date()){
+  connection<-dbConnect(RSQLite::SQLite(), dbPath)
+  query = "SELECT DISTINCT TaskName FROM SerolAccepted WHERE AccDate >= :d;"
+  pars = list(d = as.numeric(as.POSIXct(dateToSearch)))
   tmp <- dbGetQuery(connection, query, pars)
   dbDisconnect(connection)
   return(tmp)

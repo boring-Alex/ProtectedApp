@@ -1,10 +1,17 @@
 getButton<-function(bttnId, bttnName, bttnClass, bttnIcon = NULL, tTip = NULL){
-  ui<-actionButton(inputId = bttnId,
+  ui<-tooltip(actionButton(inputId = bttnId,
                  label = bttnName,
                  class = bttnClass,
                  icon = bttnIcon,
-                 style = "width: 100%",
-                 tooltip = tTip)
+                 style = "width: 100%"),
+              tTip)
+  if(is.null(tTip)){
+    ui<-actionButton(inputId = bttnId,
+                     label = bttnName,
+                     class = bttnClass,
+                     icon = bttnIcon,
+                     style = "width: 100%")
+  }
   return(ui)
 }
 

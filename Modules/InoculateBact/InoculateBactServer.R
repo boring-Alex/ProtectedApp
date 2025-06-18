@@ -83,6 +83,24 @@ InoculateBactServer<-function(theme, id = "InoculateBact"){
           WarningAlert("Предупреждение", conditionMessage(cond))
         })
       })
+      observeEvent(input$CompleteTask, {
+        if(selectedAxNum() == ""){
+          WarningAlert("Внимание!","строка не выбрана")
+          return()
+        }
+        tryCatch({
+          CloseSpecimen(selectedAxNum(), "BactAccepted", appData)
+          dishesData(CountDishes())
+          specimensData(LoadBacterilogyByStatus(appData, FALSE))
+          SuccessAlert("Успешно", "образец отмечен как завершённый")
+        },
+        error = function(cond){
+          ErrorAlert("Ошибка!", conditionMessage(cond))
+        },
+        warning = function(cond){
+          WarningAlert("Предупреждение", conditionMessage(cond))
+        })
+      })
     }
   )
 }
