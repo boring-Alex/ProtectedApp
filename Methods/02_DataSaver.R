@@ -115,6 +115,18 @@ CloseSpecimen<-function(AxSpecimenNum, dataTable, dbPath){
   dbDisconnect(connection)
 }
 
+AddVialToDb<-function(SpecCode, dataTable, dbPath){
+  connection<-dbConnect(RSQLite::SQLite(), dbPath)
+  query <- paste0("UPDATE ",dataTable, " Set HasVial = TRUE WHERE SampleCode = :num;")
+  pars<-list(num = SpecCode)
+  rs<-dbSendStatement(connection, query)
+  dbBind(rs, pars)
+  rowsAff<-dbGetRowsAffected(rs)
+  dbClearResult(rs)
+  dbDisconnect(connection)
+  return(rowsAff)
+}
+
 AddSerolAcceptedRecord<-function(acceptedTable, dbPath){
   connection<-dbConnect(RSQLite::SQLite(), dbPath)
   query <- "INSERT INTO SerolAccepted (

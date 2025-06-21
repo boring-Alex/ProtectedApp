@@ -19,12 +19,14 @@ library(bsicons)
 library(rclipboard)
 source("headers.R")
 mainTheme<-bslib::bs_theme(
-  bootswatch = "flatly"
+  bootswatch = "minty"
 )
+darkTheme<-bs_theme(bootswatch = "darkly")
 
 # Define UI for application that draws a histogram
 ui <- shinyUI(
   fluidPage(
+    theme = mainTheme,
     navbarPage(
       collapsible = TRUE,
       title = "Приём биоматериала",
@@ -34,15 +36,20 @@ ui <- shinyUI(
       tabPanel("Бактериология: посевы",
                InoculateBactUI(mainTheme)),
       tabPanel("Серологические исследования",
-               SerolAcceptUi(mainTheme))
+               SerolAcceptUi(mainTheme)),
+      nav_spacer(),
+      nav_item(input_dark_mode(id = "theme_toggle", mode = "light"))
     )
   )
 )
 
-#ui<-secure_app(theme = mainTheme, ui)
+ui<-secure_app(theme = mainTheme, ui, timeout = 15.0)
 
 # Define server logic required to draw a histogram
-server <- function(input, output) {
+server <- function(input, output, session) {
+  observe(session$setCurrentTheme(
+    if (isTRUE(input$theme_toggle)) darkTheme else mainTheme
+  ))
   res_auth <- secure_server(
     check_credentials = check_credentials(credentials)
   )

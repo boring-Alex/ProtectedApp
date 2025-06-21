@@ -65,17 +65,17 @@ PutInPlate <- function(dataFrame, posNumber, inputType = c("empty", "blank", "ne
 }
 
 GetTubeQueryNum<-function(firstNum, tubeNum){
-  if(firstNum > tubeNum){
+  if(as.numeric(firstNum) > as.numeric(tubeNum)){
     stop("Первый номер не может быть больше текущего")
   }
-  return(tubeNum + 1 - firstNum)
+  return(as.numeric(tubeNum) + 1 - as.numeric(firstNum))
 }
 
 GetTubePlateNum<-function(firstNum, tubeNum, rowsN, colsN){
   if(firstNum > tubeNum){
     stop("Первый номер не может быть больше текущего")
   }
-  return(as.integer((tubeNum + 1 - firstNum) / (rowsN*colsN)) + 1)
+  return(as.integer((as.numeric(tubeNum) + 1 - as.numeric(firstNum)) / (rowsN * colsN)) + 1)
 }
 
 #EndRegion 
@@ -86,10 +86,10 @@ GetPlateNums <- function(mainData, specType, rowNum, colNum, necessaryPlate){
   tmp <- mainData %>% filter(Type == specType)
   tmp$Plate <- lapply(tmp$CurrentNum, function(x,y){
     minNum<-min(x)
-    as.integer((x+1-minNum) / y) + 1
+    as.integer((as.numeric(x)+1-as.numeric(minNum)) / as.numeric(y)) + 1
   },y = numInPlate)
   tmp <- tmp %>% filter(Plate == necessaryPlate)
-  output<-data.frame(Num = tmp$CurrentNum, Tube = tmp$HasVial)
+  output<-data.frame(Num = tmp$CurrentNum, Tube = as.logical(tmp$HasVial))
   return(output)
 }
 #EndRegion разбор пробирок по планшетам

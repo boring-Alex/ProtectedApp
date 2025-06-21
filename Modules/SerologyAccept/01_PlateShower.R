@@ -7,10 +7,10 @@ PlateShower<-function(rNum, cNum, samples, currSample = 0){
   logo<-character()
   for(n in 1:nrow(samples)){
     logo = inputTypeTypes[2]
-    if(samples$Tube[n] == TRUE){
+    if(samples$Tube[n]){
       logo = inputTypeTypes[4]
     }
-    if(samples$Num[n] == currSample){
+    if(samples$Num[n] == currSample && !samples$Tube[n]){
       logo = inputTypeTypes[3]
     }
     currTubePosition <- GetTubeQueryNum(firstNum, samples$Num[n])

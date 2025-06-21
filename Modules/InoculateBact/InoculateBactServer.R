@@ -34,14 +34,14 @@ InoculateBactServer<-function(theme, id = "InoculateBact"){
         tab$AccDate<-strftime(dates,format = "%d.%m.%Y %H:%M")
         colnames(tab)<-c("Номер Аксапта",
                          "Код образца",
-                         "Дата поступления",
+                         "Дата",
                          "Группа",
-                         "Журнальный номер")
+                         "№ ПП")
         DT::datatable(tab,
                       selection = "single",
                       options = list(ordering = FALSE,
                                      language = ruDT,
-                                     columnDefs = list(list(targets = ncol(tab), visible = FALSE)), # скрываем колонку с индексами
+                                     #columnDefs = list(list(targets = ncol(tab), visible = FALSE)), # скрываем колонку с индексами
                                      rowCallback = rowCallback))
       })
       output$AxToClipboard<-renderUI({

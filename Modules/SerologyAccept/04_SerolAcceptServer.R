@@ -5,6 +5,7 @@ SerolAcceptServer<-function(theme, id = "SerolAccept"){
       serolNums<-reactiveVal(LoadDbData(appData, "SerolNumbers"))
       tasksNumbers<-reactiveVal(c("<Новый>",LoadTasksNums(appData)[,1]))
       acceptedData<-reactiveVal(LoadSerology(appData,Sys.Date()))
+      currTaskData<-reactiveVal(NULL)
       currentShownData<-reactiveVal(NULL)
       lastSelectedType<-reactiveVal("Гепатиты")
       lastSelectedTask<-reactiveVal("<Новый>")
@@ -49,8 +50,8 @@ SerolAcceptServer<-function(theme, id = "SerolAccept"){
           errorMessage(c(errorMessage(),errorMsg))
         }
       }
-      updateChangedGroups<-function(){
-        newValue<-input$SpecimenType
+      updateChangedGroups<-function(code){
+        newValue<-code
         if(is.null(changedCodeGroups())){
           changedCodeGroups(newValue)
         }else{
@@ -65,7 +66,7 @@ SerolAcceptServer<-function(theme, id = "SerolAccept"){
           tmp
         })
         updateNumericInput(session, "SpecNum", value = nextCode)
-        updateChangedGroups()
+        updateChangedGroups(input$SpecimenType)
       }
       updateDbNumbers<-function(){
         groupsToSave<-changedCodeGroups()
@@ -203,15 +204,18 @@ SerolAcceptServer<-function(theme, id = "SerolAccept"){
           tmp<-tmp %>% filter(AxaptaCode != codeToDelete)
           cNames<-1:nrow(tmp)
           nextC<-as.numeric(numToDelete)
-          for(i in 1:nrow(tmp)){
-            if(tmp$Type[i] == typeToDelete && tmp$CurrentNum[i] > numToDelete){
-              tmp[i,]$CurrentNum = as.numeric(tmp[i,]$CurrentNum) - 1
+          if(nrow(tmp) > 0){
+            for(i in 1:nrow(tmp)){
+              if(tmp$Type[i] == typeToDelete && tmp$CurrentNum[i] > numToDelete){
+                tmp[i,]$CurrentNum = as.numeric(tmp[i,]$CurrentNum) - 1
+              }
             }
           }
-          if(nrow(tmp) > 1){
-            rownames(tmp) <- cNames
-            }
-          nextC<-as.numeric(max(tmp$CurrentNum)) + 1
+          if(nrow(tmp) > 1){ rownames(tmp) <- cNames }
+          groupTab<-tmp %>% filter(Type == input$SpecimenType)
+          if(nrow(groupTab)>0){
+            nextC<-as.numeric(max(groupTab$CurrentNum)) + 1
+          }
           updateSpecimenNumbers(nextC)
           acceptedData(tmp)
           currentShownData({
@@ -240,9 +244,9 @@ SerolAcceptServer<-function(theme, id = "SerolAccept"){
           InfoAlert("Информация", "новых данных не введено")
         }
       })
-      observeEvent(input$VialCode,{
+      observe({
+        if(is.null(currTaskData())){return()}
         updateDataView<-function(record, firstNum){
-          print(record)
           if(nrow(record) == 0){
             output$selectedAxNum = renderText({""})
             output$selectedType = renderText({""})
@@ -255,11 +259,29 @@ SerolAcceptServer<-function(theme, id = "SerolAccept"){
           output$selectedType = renderText({paste("Тип исследования:", record$Type[1])})
           output$selectedSpecNum = renderText({paste("Номер журнальный:", record$CurrentNum[1])})
           output$selectedPlateNum = renderText({paste("Номер штатива:", plateNum)})
+          output$AcceptVial <-renderUI({
+            tagList(
+              SecondaryButton(ns("AcceptVialBttn"),
+                              "Установить пробирку")
+            )
+          })
         }
+        firstNum<-min(currTaskData()$CurrentNum)
+        selectedRecord <- currTaskData()[currTaskData()$SampleCode == input$VialCode,]
+        updateDataView(selectedRecord, firstNum)
+        if(nrow(selectedRecord) == 0){
+          output$TestPlate<-renderDT({NULL})
+          return()
+        }
+        targetPlateNum <- GetTubePlateNum(firstNum, selectedRecord$CurrentNum[1], input$rowsNum, input$colsNum)
+        smls<-GetPlateNums(currTaskData(),selectedRecord$Type[1], input$rowsNum, input$colsNum, targetPlateNum)
+        output$TestPlate<-PlateShower(input$rowsNum, input$colsNum, smls, selectedRecord$CurrentNum[1])
+      })
+      observeEvent(input$VialCode,{
         if(input$VialCode == ""){
           return()
         }
-        currTaskData<-acceptedData() %>% filter(TaskName == input$ChooseTaskNum)
+        temp<-acceptedData() %>% filter(TaskName == input$ChooseTaskNum)
         errorMsg <- ""
         if(!stri_detect(input$VialCode, regex = "^\\d{12}$")){
           errorMsg <- "Неверный формат номера направления"
@@ -270,7 +292,7 @@ SerolAcceptServer<-function(theme, id = "SerolAccept"){
           errorMessage(as.character())
           return()
         }
-        if(!input$VialCode %in% currTaskData$SampleCode){
+        if(!input$VialCode %in% temp$SampleCode){
           errorMsg <- paste("Такого направления нет в разборе",input$ChooseTaskNum)
           errorMessage(c(errorMessage(),errorMsg))
           for(err in errorMessage()){
@@ -284,12 +306,31 @@ SerolAcceptServer<-function(theme, id = "SerolAccept"){
           errorMessage(as.character())
           return()
         }
-        firstNum<-min(currTaskData$CurrentNum)
-        selectedRecord <- currTaskData[currTaskData$SampleCode == input$VialCode,]
-        updateDataView(selectedRecord, firstNum)
-        targetPlateNum <- GetTubePlateNum(firstNum, selectedRecord$CurrentNum[1], input$rowsNum, input$colsNum)
-        smls<-GetPlateNums(currTaskData,selectedRecord$Type[1], input$rowsNum, input$colsNum, targetPlateNum)
-        output$TestPlate<-PlateShower(input$rowsNum, input$colsNum, smls, selectedRecord$CurrentNum[1])
+        currTaskData(temp)
+      })
+      observeEvent(input$AcceptVialBttn,{
+        tryCatch({
+          dat<-acceptedData()
+          dat[dat$SampleCode == input$VialCode,"HasVial"] <- TRUE
+          acceptedData(dat)
+          currTaskData(acceptedData() %>% filter(TaskName == input$ChooseTaskNum))
+          recUpdated<-AddVialToDb(input$VialCode,"SerolAccepted",appData)
+          msg<-"БД обновится при сохранении разбора"
+          if(recUpdated>0){
+            msg<-paste("Обновлено записей в БД:", recUpdated)
+          }
+          SuccessAlert("Пробирка установлена",msg)
+        },
+        error = function(cond){
+          ErrorAlert("Ошибка!", conditionMessage(cond))
+        },
+        warning = function(cond){
+          WarningAlert("Предупреждение", conditionMessage(cond))
+        })
+        dat<-acceptedData()
+        dat[dat$SampleCode == input$VialCode,"HasVial"] <- TRUE
+        acceptedData(dat)
+        currTaskData(acceptedData() %>% filter(TaskName == input$ChooseTaskNum))
       })
     })
 }

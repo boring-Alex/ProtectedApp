@@ -15,9 +15,14 @@ VialLocatorUi<-function(theme, id = "VialLocator"){
                    icon("vial", style = "color: rgb(145, 28, 45);"), "- пробирку ставить сюда  ",
                    icon("vial-circle-check", style = "color: rgb(120, 235, 122);"), "- пробирка есть  "),
                 span(textOutput(ns("selectedAxNum"),inline = TRUE)),
+                div(style = "height:2.5px"),
                 span(textOutput(ns("selectedType"),inline = TRUE)),
+                div(style = "height:2.5px"),
                 span(textOutput(ns("selectedSpecNum"),inline = TRUE)),
+                div(style = "height:2.5px"),
                 span(textOutput(ns("selectedPlateNum"),inline = TRUE)),
+                div(style = "height:2.5px"),
+                uiOutput(ns("AcceptVial")),
                 DTOutput(ns("TestPlate")))
     )
   )
