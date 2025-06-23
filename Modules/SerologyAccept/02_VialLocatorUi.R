@@ -5,6 +5,7 @@ VialLocatorUi<-function(theme, id = "VialLocator"){
       sidebarPanel(
         span(textOutput(ns("selectedTaskLocator"),inline = TRUE), style="color:blue"),
         accordion(accordion_panel("Настройки штатива",
+                                  SecondaryButton(ns("ShowPlates"),"Подсчёт планшетов",icon("table-cells"), "Сводка по количеству штативов, необходимых в данном разборе для расстановки всех пробирок по группам"),
                                   numericInput(ns("rowsNum"), "Количество рядов", min = 1, value = 4),
                                   numericInput(ns("colsNum"), "Количество пробирок в ряду", min = 1, value = 8))),
         textInput(ns("VialCode"),

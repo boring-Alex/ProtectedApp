@@ -76,13 +76,20 @@ SerolAcceptServer<-function(theme, id = "SerolAccept"){
         UpdateSerolTypeMaxNum(groupsToSave, serolNums(), appData)
         changedCodeGroups(NULL)
       }
-      newTaskMd<-modalDialog(
+      newTaskMd <- modalDialog(
         textInput(ns("NewTaskName"),"Новый разбор", width= "100%"),
         size = "m",
         easyClose = TRUE,
         footer = tagList(
           SuccessButton(ns("AddNewTaskName"), "Ok")
         )
+      )
+      showSummaryDialog <- modalDialog(
+        DTOutput(ns("SummaryPlate")),
+        size = "xl",
+        fade = TRUE,
+        easyClose = TRUE,
+        footer = NULL
       )
       observe({
         updateSelectInput(session, "ChooseTaskNum",
@@ -167,7 +174,7 @@ SerolAcceptServer<-function(theme, id = "SerolAccept"){
             }else{
               icoList<-c(icoList, as.character(icon("lock-open", lib = "font-awesome")))
             }
-            if(tab[i, 6] == 1){
+            if(tab[i, 6] == 1 || tab[i, 6] == "TRUE" || as.logical(tab[i, 6])){
               vialIco<-as.character(icon("vial-circle-check", style = "color: rgb(120, 235, 122);"))
             }else{
               vialIco <- as.character(icon("file-contract", style = "color: rgb(18, 49, 204);"))
@@ -331,6 +338,29 @@ SerolAcceptServer<-function(theme, id = "SerolAccept"){
         dat[dat$SampleCode == input$VialCode,"HasVial"] <- TRUE
         acceptedData(dat)
         currTaskData(acceptedData() %>% filter(TaskName == input$ChooseTaskNum))
+      })
+      observeEvent(input$ShowPlates,{
+        tempDat<-acceptedData() %>% filter(TaskName == input$ChooseTaskNum)
+        if(nrow(tempDat) == 0){
+          WarningAlert("Внимание","никакие данные не внесены")
+          return()
+        }
+        newDat<-tempDat %>% group_by(Type) %>% summarise(MaxSpecNum = max(CurrentNum), MinSpecNum = min(CurrentNum))
+        platesNum <- GetTubePlateNum(newDat[1,3],newDat[1,2],input$rowsNum, input$colsNum)
+        if(nrow(newDat)>1){
+          for(i in 2:nrow(newDat)){
+            platesNum <- c(platesNum ,GetTubePlateNum(newDat[i,3],newDat[i,2],input$rowsNum, input$colsNum))
+          }
+        }
+        newDat$Plates <- platesNum
+        showModal(showSummaryDialog)
+        output$SummaryPlate<-renderDT({
+          tab <- newDat[,-c(2,3)]
+          colnames(tab) <- c("Группа","Количество планшетов")
+          dt<-DT::datatable(tab, selection = "none",
+                            options = list(language = ruDT))
+          dt
+        })
       })
     })
 }
