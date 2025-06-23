@@ -72,10 +72,15 @@ GetTubeQueryNum<-function(firstNum, tubeNum){
 }
 
 GetTubePlateNum<-function(firstNum, tubeNum, rowsN, colsN){
-  if(firstNum > tubeNum){
+  if(as.numeric(firstNum) > as.numeric(tubeNum)){
     stop("Первый номер не может быть больше текущего")
   }
-  return(as.integer((as.numeric(tubeNum) + 1 - as.numeric(firstNum)) / (rowsN * colsN)) + 1)
+  resDecimal <- (as.numeric(tubeNum) + 1 - as.numeric(firstNum)) / (rowsN * colsN)
+  resInt <- as.integer(resDecimal)
+  if(resDecimal > resInt){
+    resInt = resInt + 1
+  }
+  return(resInt)
 }
 
 #EndRegion 
