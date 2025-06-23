@@ -1,0 +1,12 @@
+name: ProtectedApp
+title: ProtectedApp
+username: labproject
+account: labproject
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 14970733
+bundleId: 10495909
+url: https://labproject.shinyapps.io/ProtectedApp/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE

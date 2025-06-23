@@ -5,11 +5,11 @@ credentials <- data.frame(
 )
 
 if(Sys.info()["sysname"] == "Linux"){
-  usersDb<-"~/ShinyProjects/ProtectedApp/DataBases/Users.sqlite"
-  appData<-"~/ShinyProjects/ProtectedApp/DataBases/AccSpecimens.sqlite"
-  methodsData<-"~/ShinyProjects/ProtectedApp/Methods"
-  ModulesData<-"~/ShinyProjects/ProtectedApp/Modules"
-  CustomElements<-"~/ShinyProjects/ProtectedApp/DesignElements"
+  usersDb<-"DataBases/Users.sqlite"
+  appData<-"DataBases/AccSpecimens.sqlite"
+  methodsData<-"Methods"
+  ModulesData<-"Modules"
+  CustomElements<-"DesignElements"
 }
 
 if(Sys.info()["sysname"] == "Windows"){

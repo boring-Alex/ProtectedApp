@@ -31,7 +31,7 @@ DishesTable<-data.frame(Name = c("Кровяной агар",
                                  "Престон агар"
                                  ))
 if(Sys.info()["sysname"] == "Linux"){
-  DishPerTypeTable<-read.csv("~/ShinyProjects/ProtectedApp/DataBases/TypesAndDishes.csv", dec=",")
+  DishPerTypeTable<-read.csv("DataBases/TypesAndDishes.csv", dec=",")
 }else{
   DishPerTypeTable<-read.csv("E:/LabApps/ProtectedApp/DataBases/TypesAndDishes.csv", dec=",")
 }
