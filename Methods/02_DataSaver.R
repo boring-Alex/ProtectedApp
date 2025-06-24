@@ -7,6 +7,7 @@ CreateInitialTables<-function(dbPath){
   if(!("BactAccepted" %in% tables)){ dbWriteTable(connection, "BactAccepted", BactAcceptedTable) }
   if(!("SerolAccepted" %in% tables)){ dbWriteTable(connection, "SerolAccepted", SerolAcceptedTable) }
   if(!("SerolNumbers" %in% tables)){ dbWriteTable(connection, "SerolNumbers", SerolNumbers) }
+  if(!("Employes" %in% tables)){ dbWriteTable(connection, "Employes", Employes) }
   dbDisconnect(connection)
 }
 

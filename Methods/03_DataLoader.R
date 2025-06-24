@@ -5,9 +5,11 @@ LoadDbData<-function(dbPath, dataTable){
   return(result)
 }
 
+credentials = LoadDbData(usersDb, "credentials")
 SpecTypesTable = LoadDbData(appData, "SpecTypes")
 DishesTable = LoadDbData(appData, "Dishes")
 DishPerTypeTable = LoadDbData(appData, "DishPerType")
+Employes = LoadDbData(appData, "Employes")
 
 LoadUsersData<-function(dbPath){
   connection<-dbConnect(RSQLite::SQLite(), dbPath)

@@ -38,12 +38,13 @@ ui <- shinyUI(
       tabPanel("Серологические исследования",
                SerolAcceptUi(mainTheme)),
       nav_spacer(),
+      nav_item(UserCabinetUi(mainTheme)),
       nav_item(input_dark_mode(id = "theme_toggle", mode = "light"))
     )
   )
 )
 
-ui<-secure_app(theme = mainTheme, ui, timeout = 15.0)
+ui<-secure_app(theme = mainTheme, ui, enable_admin = TRUE)
 
 # Define server logic required to draw a histogram
 server <- function(input, output, session) {
@@ -56,6 +57,7 @@ server <- function(input, output, session) {
   AcceptBactServer(mainTheme)
   InoculateBactServer(mainTheme)
   SerolAcceptServer(mainTheme)
+  UserCabinetServer(mainTheme, idResult = res_auth)
 }
 
 # Run the application 

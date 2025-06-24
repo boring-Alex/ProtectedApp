@@ -1,8 +1,8 @@
-credentials <- data.frame(
-  user = c("user", "admin"),
-  password = c("user", "admin"), # password will automatically be hashed
-  stringsAsFactors = FALSE
-)
+#credentials <- data.frame(
+  #user = pwds$Id,
+  #password = pwds$pwd, # password will automatically be hashed
+  #stringsAsFactors = FALSE
+#)
 
 if(Sys.info()["sysname"] == "Linux"){
   usersDb<-"DataBases/Users.sqlite"
@@ -23,11 +23,11 @@ if(Sys.info()["sysname"] == "Windows"){
 
 if(!file.exists(usersDb)){
   mydb <- dbConnect(RSQLite::SQLite(), usersDb)
-  dbDisconnect(mydb)
   create_db(
     credentials_data = credentials,
     sqlite_path = usersDb, # will be created
   )
+  dbDisconnect(mydb)
 }
 
 set_labels(
