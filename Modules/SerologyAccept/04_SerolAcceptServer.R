@@ -142,6 +142,7 @@ SerolAcceptServer<-function(theme, id = "SerolAccept"){
         updateSpecimenNumbers(nextC)
         updateTextInput(session, "AxaptaCode", value = "")
         updateTextInput(session, "SpecimenCode", value = "")
+        
       })
       observeEvent(input$ChooseTaskNum,{
         lastSelectedTask(input$ChooseTaskNum)
@@ -168,13 +169,14 @@ SerolAcceptServer<-function(theme, id = "SerolAccept"){
                   "Журнальный номер",
                   "Пробирка найдена")
         if(nrow(tab) > 0){
+          cat(file = stderr(),tab)
           for(i in 1:nrow(tab)){
             if(tab[i,1] %in% axCodes()){
               icoList<-c(icoList, as.character(icon("lock", lib = "font-awesome")))
             }else{
               icoList<-c(icoList, as.character(icon("lock-open", lib = "font-awesome")))
             }
-            if(tab[i, 6] == 1 || tab[i, 6] == "TRUE" || as.logical(tab[i, 6])){
+            if(tab[i, 6] == 1 || tab[i, 6] == "TRUE" || tab[i, 6] == "1"){
               vialIco<-as.character(icon("vial-circle-check", style = "color: rgb(120, 235, 122);"))
             }else{
               vialIco <- as.character(icon("file-contract", style = "color: rgb(18, 49, 204);"))
@@ -189,7 +191,9 @@ SerolAcceptServer<-function(theme, id = "SerolAccept"){
                           escape = FALSE,
                           options = list(ordering = FALSE,
                                          language = ruDT,
-                                         dom = 't'))
+                                         dom = 't',
+                                         paging = FALSE,
+                                         scrollX = TRUE))
         dt
       })
       observeEvent(input$DeleteButton, {
@@ -338,29 +342,39 @@ SerolAcceptServer<-function(theme, id = "SerolAccept"){
         dat[dat$SampleCode == input$VialCode,"HasVial"] <- TRUE
         acceptedData(dat)
         currTaskData(acceptedData() %>% filter(TaskName == input$ChooseTaskNum))
+        updateTextInput(session, "VialCode", value = "")
       })
       observeEvent(input$ShowPlates,{
-        tempDat<-acceptedData() %>% filter(TaskName == input$ChooseTaskNum)
-        if(nrow(tempDat) == 0){
-          WarningAlert("Внимание","никакие данные не внесены")
-          return()
-        }
-        newDat<-tempDat %>% group_by(Type) %>% summarise(MaxSpecNum = max(CurrentNum), MinSpecNum = min(CurrentNum))
-        platesNum <- GetTubePlateNum(newDat[1,3],newDat[1,2],input$rowsNum, input$colsNum)
-        if(nrow(newDat)>1){
-          for(i in 2:nrow(newDat)){
-            platesNum <- c(platesNum ,GetTubePlateNum(newDat[i,3],newDat[i,2],input$rowsNum, input$colsNum))
+        tryCatch({
+          tempDat<-acceptedData() %>% filter(TaskName == input$ChooseTaskNum)
+          if(nrow(tempDat) == 0){
+            WarningAlert("Внимание","никакие данные не внесены")
+            return()
           }
-        }
-        newDat$Plates <- platesNum
-        showModal(showSummaryDialog)
-        output$SummaryPlate<-renderDT({
-          tab <- newDat[,-c(2,3)]
-          colnames(tab) <- c("Группа","Количество планшетов")
-          dt<-DT::datatable(tab, selection = "none",
-                            options = list(language = ruDT))
-          dt
+          newDat<-tempDat %>% group_by(Type) %>% summarise(MaxSpecNum = max(CurrentNum), MinSpecNum = min(CurrentNum))
+          platesNum <- GetTubePlateNum(newDat[1,3],newDat[1,2],input$rowsNum, input$colsNum)
+          if(nrow(newDat)>1){
+            for(i in 2:nrow(newDat)){
+              platesNum <- c(platesNum ,GetTubePlateNum(newDat[i,3],newDat[i,2],input$rowsNum, input$colsNum))
+            }
+          }
+          newDat$Plates <- platesNum
+          showModal(showSummaryDialog)
+          output$SummaryPlate<-renderDT({
+            tab <- newDat[,-c(2,3)]
+            colnames(tab) <- c("Группа","Количество планшетов")
+            dt<-DT::datatable(tab, selection = "none",
+                              options = list(language = ruDT))
+            dt
+          })
+        },
+        error = function(cond){
+          ErrorAlert("Ошибка!", conditionMessage(cond))
+        },
+        warning = function(cond){
+          WarningAlert("Предупреждение", conditionMessage(cond))
         })
+        
       })
     })
 }

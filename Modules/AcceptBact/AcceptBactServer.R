@@ -119,7 +119,9 @@ AcceptBactServer<-function(myTheme, id = "AcceptBact"){
                           escape = FALSE,
                           options = list(ordering = FALSE,
                                         language = ruDT,
-                                        dom = 't'))
+                                        dom = 't',
+                                        paging = FALSE,
+                                        scrollX = TRUE))
         dt
         })
       observeEvent(input$SpecimenType,{

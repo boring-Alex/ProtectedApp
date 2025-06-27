@@ -44,7 +44,7 @@ ui <- shinyUI(
   )
 )
 
-ui<-secure_app(theme = mainTheme, ui, enable_admin = TRUE)
+ui<-secure_app(theme = mainTheme, ui, enable_admin = TRUE, timeout = 0)
 
 # Define server logic required to draw a histogram
 server <- function(input, output, session) {
