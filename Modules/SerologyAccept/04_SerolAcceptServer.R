@@ -142,7 +142,10 @@ SerolAcceptServer<-function(theme, id = "SerolAccept"){
         updateSpecimenNumbers(nextC)
         updateTextInput(session, "AxaptaCode", value = "")
         updateTextInput(session, "SpecimenCode", value = "")
-        
+        # Получаем выбранный элемент
+        selected_id <- paste("#", ns("AxaptaCode"), sep = "")
+        # Отправляем сообщение браузеру с указанным селектором
+        session$sendCustomMessage(type = "setFocus", list(selector = selected_id))
       })
       observeEvent(input$ChooseTaskNum,{
         lastSelectedTask(input$ChooseTaskNum)
@@ -169,7 +172,6 @@ SerolAcceptServer<-function(theme, id = "SerolAccept"){
                   "Журнальный номер",
                   "Пробирка найдена")
         if(nrow(tab) > 0){
-          cat(file = stderr(),tab)
           for(i in 1:nrow(tab)){
             if(tab[i,1] %in% axCodes()){
               icoList<-c(icoList, as.character(icon("lock", lib = "font-awesome")))
@@ -343,6 +345,9 @@ SerolAcceptServer<-function(theme, id = "SerolAccept"){
         acceptedData(dat)
         currTaskData(acceptedData() %>% filter(TaskName == input$ChooseTaskNum))
         updateTextInput(session, "VialCode", value = "")
+        selected_id <- paste("#", ns("VialCode"), sep = "")
+        # Отправляем сообщение браузеру с указанным селектором
+        session$sendCustomMessage(type = "setFocus", list(selector = selected_id))
       })
       observeEvent(input$ShowPlates,{
         tryCatch({

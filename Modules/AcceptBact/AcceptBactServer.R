@@ -52,7 +52,6 @@ AcceptBactServer<-function(myTheme, id = "AcceptBact"){
         typesAndNums({
           tmp<-typesAndNums()
           tmp[tmp$Name == input$SpecimenType, "MaxNum"]<-nextCode
-          print(tmp[tmp$Name == input$SpecimenType,])
           tmp
         })
         updateNumericInput(session, "SpecNum", value = nextCode)
@@ -91,7 +90,6 @@ AcceptBactServer<-function(myTheme, id = "AcceptBact"){
           })
         nextC <- input$SpecNum + 1
         updateSpecimenNumbers(nextC)
-        print(typesAndNums()[typesAndNums()$Name == input$SpecimenType,])
         updateTextInput(session, "AxaptaCode", value = "")
         updateTextInput(session, "SpecimenCode", value = "")
       })

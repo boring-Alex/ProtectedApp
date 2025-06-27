@@ -87,12 +87,22 @@ GetTubePlateNum<-function(firstNum, tubeNum, rowsN, colsN){
 
 #Region разбор пробирок по планшетам
 GetPlateNums <- function(mainData, specType, rowNum, colNum, necessaryPlate){
-  numInPlate <- rowNum * colNum
+  numInPlate <- as.numeric(rowNum) * as.numeric(colNum)
   tmp <- mainData %>% filter(Type == specType)
-  tmp$Plate <- lapply(tmp$CurrentNum, function(x,y){
-    minNum<-min(x)
-    as.integer((as.numeric(x)+1-as.numeric(minNum)) / as.numeric(y)) + 1
-  },y = numInPlate)
+  minNum<-min(tmp$CurrentNum)
+  plt<-((as.numeric(tmp$CurrentNum[1]) + 1 - as.numeric(minNum)) %/% numInPlate) + 1
+  if(nrow(tmp)>1){
+    for(i in 2:nrow(tmp)){
+      tPlt<-((as.numeric(tmp$CurrentNum[i]) + 1 - as.numeric(minNum)) %/% numInPlate) + 1
+      plt<-c(plt, tPlt)
+    }
+  }
+  tmp$Plate <- plt
+  #tmp$Plate <- lapply(tmp$CurrentNum, function(x,y){
+    #minNum<-min(x)
+    #as.integer((as.numeric(x)+1-as.numeric(minNum)) / as.numeric(y)) + 1
+  #},y = numInPlate)
+  print(tmp)
   tmp <- tmp %>% filter(Plate == necessaryPlate)
   output<-data.frame(Num = tmp$CurrentNum, Tube = as.logical(tmp$HasVial))
   return(output)
