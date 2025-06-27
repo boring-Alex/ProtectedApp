@@ -4,7 +4,7 @@ AcceptBactServer<-function(myTheme, id = "AcceptBact"){
     function(input, output, session){
       ns<-NS(id)
       acceptedData<-reactiveVal(LoadBacterilogyByStatus(appData,status = FALSE))
-      typesAndNums<-reactiveVal(SpecTypesTable)
+      typesAndNums<-reactiveVal(LoadDbData(appData, "SpecTypes"))
       changedCodeGroups<-reactiveVal(NULL)
       errorMessage<-reactiveVal(as.character())
       axCodes<-reactiveVal(LoadBacterilogyByStatus(appData,status = FALSE)[,1])
@@ -51,7 +51,8 @@ AcceptBactServer<-function(myTheme, id = "AcceptBact"){
       updateSpecimenNumbers<-function(nextCode){
         typesAndNums({
           tmp<-typesAndNums()
-          tmp[tmp$Name == input$SpecimenType,2]<-nextCode
+          tmp[tmp$Name == input$SpecimenType, "MaxNum"]<-nextCode
+          print(tmp[tmp$Name == input$SpecimenType,])
           tmp
         })
         updateNumericInput(session, "SpecNum", value = nextCode)
@@ -90,6 +91,7 @@ AcceptBactServer<-function(myTheme, id = "AcceptBact"){
           })
         nextC <- input$SpecNum + 1
         updateSpecimenNumbers(nextC)
+        print(typesAndNums()[typesAndNums()$Name == input$SpecimenType,])
         updateTextInput(session, "AxaptaCode", value = "")
         updateTextInput(session, "SpecimenCode", value = "")
       })

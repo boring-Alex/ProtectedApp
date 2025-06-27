@@ -16,6 +16,7 @@ UpdateSpecimenMaxNum<-function(groupNames, spTypesTab, dbPath){
   dbBegin(connection)
   for(groupName in groupNames){
     val <- spTypesTab[spTypesTab$Name == groupName,]
+    print(val)
     query <- "UPDATE SpecTypes SET MaxNum = :num WHERE Name = :nam"
     pars<-list(num = val[1,]$MaxNum, nam = val[1,]$Name)
     dbExecute(connection, query, pars)
