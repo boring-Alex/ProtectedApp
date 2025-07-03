@@ -18,6 +18,7 @@ library(shinyalert)
 library(bsicons)
 library(rclipboard)
 source("headers.R")
+options(show.error.locations = TRUE)
 mainTheme<-bslib::bs_theme(
   bootswatch = "minty"
 )

@@ -20,10 +20,11 @@ CalcTubePosition <- function(rowNum, colNum, tubeNum){
   plateCount <- rowNum * colNum
   tubePlace <- tubeNum %% plateCount
   plateNum <- as.integer(tubeNum / plateCount)
-  result$PlateNum <- PlateNum
+  result<-list()
+  result$PlateNum <- plateNum
   result$Position <- tubePlace
   if(tubePlace == 0){
-    result$PlateNum <- PlateNum - 1
+    result$PlateNum <- plateNum - 1
     result$Position <- plateCount
   }
   return(result)
@@ -93,18 +94,18 @@ GetPlateNums <- function(mainData, specType, rowNum, colNum, necessaryPlate){
   plt<-((as.numeric(tmp$CurrentNum[1]) + 1 - as.numeric(minNum)) %/% numInPlate) + 1
   if(nrow(tmp)>1){
     for(i in 2:nrow(tmp)){
-      tPlt<-((as.numeric(tmp$CurrentNum[i]) + 1 - as.numeric(minNum)) %/% numInPlate) + 1
+      divTrail<-(as.numeric(tmp$CurrentNum[i]) + 1 - as.numeric(minNum)) %% numInPlate
+      tPlt<-(as.numeric(tmp$CurrentNum[i]) + 1 - as.numeric(minNum)) %/% numInPlate
+      if(divTrail > 0){
+        tPlt <- tPlt + 1
+      }
       plt<-c(plt, tPlt)
     }
   }
   tmp$Plate <- plt
-  #tmp$Plate <- lapply(tmp$CurrentNum, function(x,y){
-    #minNum<-min(x)
-    #as.integer((as.numeric(x)+1-as.numeric(minNum)) / as.numeric(y)) + 1
-  #},y = numInPlate)
   print(tmp)
   tmp <- tmp %>% filter(Plate == necessaryPlate)
-  output<-data.frame(Num = tmp$CurrentNum, Tube = as.logical(tmp$HasVial))
+  output<-data.frame(Num = tmp$CurrentNum, Tube = tmp$HasVial)
   return(output)
 }
 #EndRegion разбор пробирок по планшетам

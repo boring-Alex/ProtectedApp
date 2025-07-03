@@ -178,7 +178,7 @@ SerolAcceptServer<-function(theme, id = "SerolAccept"){
             }else{
               icoList<-c(icoList, as.character(icon("lock-open", lib = "font-awesome")))
             }
-            if(tab[i, 6] == 1 || tab[i, 6] == "TRUE" || tab[i, 6] == "1"){
+            if(CheckBool(tab[i, 6])){
               vialIco<-as.character(icon("vial-circle-check", style = "color: rgb(120, 235, 122);"))
             }else{
               vialIco <- as.character(icon("file-contract", style = "color: rgb(18, 49, 204);"))
@@ -265,6 +265,9 @@ SerolAcceptServer<-function(theme, id = "SerolAccept"){
             output$selectedType = renderText({""})
             output$selectedSpecNum = renderText({""})
             output$selectedPlateNum = renderText({""})
+            output$AcceptVial <-renderUI({
+              NULL
+            })
             return()
           }
           plateNum <- GetTubePlateNum(firstNum, record$CurrentNum[1], input$rowsNum, input$colsNum)

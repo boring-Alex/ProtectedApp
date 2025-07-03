@@ -7,13 +7,13 @@ PlateShower<-function(rNum, cNum, samples, currSample = 0){
   logo<-character()
   for(n in 1:nrow(samples)){
     logo = inputTypeTypes[2]
-    if(samples$Tube[n]){
+    if(CheckBool(samples$Tube[n])){
       logo = inputTypeTypes[4]
     }
-    if(samples$Num[n] == currSample && !samples$Tube[n]){
+    if(samples$Num[n] == currSample && !CheckBool(samples$Tube[n])){
       logo = inputTypeTypes[3]
     }
-    currTubePosition <- GetTubeQueryNum(firstNum, samples$Num[n])
+    currTubePosition <- CalcTubePosition(rNum, cNum,GetTubeQueryNum(firstNum, samples$Num[n]))$Position
     currData <- PutInPlate(currData, currTubePosition, logo)
   }
   rownames(currData)<-rNum:1
