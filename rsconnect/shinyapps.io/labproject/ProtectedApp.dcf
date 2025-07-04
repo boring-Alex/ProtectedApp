@@ -5,7 +5,7 @@ account: labproject
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 14970733
-bundleId: 10509900
+bundleId: 10558361
 url: https://labproject.shinyapps.io/ProtectedApp/
 version: 1
 asMultiple: FALSE

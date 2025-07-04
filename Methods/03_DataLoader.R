@@ -5,7 +5,8 @@ LoadDbData<-function(dbPath, dataTable){
   return(result)
 }
 
-credentials = LoadDbData(usersDb, "credentials")
+#credentials = LoadDbData(usersDb, "credentials")
+credentials = usersDb
 SpecTypesTable = LoadDbData(appData, "SpecTypes")
 DishesTable = LoadDbData(appData, "Dishes")
 DishPerTypeTable = LoadDbData(appData, "DishPerType")
